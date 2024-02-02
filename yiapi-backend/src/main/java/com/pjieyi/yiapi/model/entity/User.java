@@ -63,6 +63,12 @@ public class User implements Serializable {
     private String userPassword;
 
     /**
+     * 调用接口验证
+     */
+    private String accessKey;
+    private String secretKey;
+
+    /**
      * 创建时间
      */
     private Date createTime;

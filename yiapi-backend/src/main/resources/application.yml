@@ -48,4 +48,7 @@ aliyun:
     captchaId:
     captchaKey:
 
+yiapi-client:
+  access-key: 4ad918cf5ef7a74d9a71dbe836a3bc81
+  secret-key: c23e79e9432490b53af052e207f9a8495235b9e0
 

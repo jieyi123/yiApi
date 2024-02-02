@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 /**
  * 权限校验 AOP
- *
  * @author pjieyi
  */
 @Aspect
@@ -36,7 +35,6 @@ public class AuthInterceptor {
 
     /**
      * 执行拦截
-     *
      * @param joinPoint
      * @param authCheck
      * @return

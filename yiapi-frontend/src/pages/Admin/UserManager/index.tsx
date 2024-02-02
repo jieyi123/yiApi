@@ -280,6 +280,7 @@ const TableList: React.FC = () => {
         headerTitle={'用户列表'}
         actionRef={actionRef}
         rowKey="key"
+        scroll={{x:'max-content'}}
         pagination={{
           pageSize: 5,
         }}

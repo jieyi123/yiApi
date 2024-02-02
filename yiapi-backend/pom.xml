@@ -96,6 +96,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!--引入SDK-->
+        <dependency>
+            <groupId>com.pjieyi</groupId>
+            <artifactId>yiapi-client-sdk</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+
         <!--发送阿里云短信-->
         <dependency>
             <groupId>com.aliyun</groupId>

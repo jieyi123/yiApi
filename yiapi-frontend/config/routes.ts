@@ -1,4 +1,7 @@
 export default [
+
+  { path: '/index', name: '欢迎', icon: 'smile', component: './Index/index' },
+  { path: '/interface_info/:id', name: '查看接口', icon: 'smile', component: './InterfaceInfo',hideInMenu: true },
   {
     path: '/user',
     layout: false,
@@ -8,7 +11,6 @@ export default [
       { name: '忘记密码', path: '/user/retrieve', component: './User/RetrievePassword' },
     ],
   },
-  { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
     path: '/admin',
     name: '管理页',
@@ -17,7 +19,7 @@ export default [
     routes: [
       { path: '/admin', redirect: '/admin/user-manager' },
       { path: '/admin/user-manager', icon: 'info',name: '用户管理', component: './Admin/UserManager' },
-      { path: '/admin/interface-info', icon: 'info',name: '接口管理', component: './Admin/InterfaceInfo' },
+      { path: '/admin/interface-info', icon: 'table',name: '接口管理', component: './Admin/InterfaceInfo' },
     ],
   },
   { name: '个人设置', icon: 'user', path: '/user-settings', component: './UserSettings' },

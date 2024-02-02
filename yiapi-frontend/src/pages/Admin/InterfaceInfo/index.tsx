@@ -1,21 +1,25 @@
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
 import {
-  FooterToolbar,
   PageContainer,
   ProDescriptions,
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import {Button, Drawer, message, Space, Table} from 'antd';
+import {Button, Drawer, message} from 'antd';
 import React, { useRef, useState } from 'react';
 import UpdateForm from './components/UpdateForm';
 import {
-  addInterfaceInfoUsingPost, deleteInterfaceInfoUsingPost,
-  listInterfaceInfoByPageUsingGet, updateInterfaceInfoUsingPost
+  addInterfaceInfoUsingPost,
+  deleteInterfaceInfoUsingPost,
+  listInterfaceInfoByPageUsingGet,
+  offlineInterfaceInfoUsingPost,
+  onlineInterfaceInfoUsingPost,
+  updateInterfaceInfoUsingPost
 } from "@/services/yiapi-backend/interfaceInfoController";
 import type {SortOrder} from "antd/lib/table/interface";
 import CreateForm, {FormValueType} from "@/pages/Admin/InterfaceInfo/components/CreateForm";
+import {TableDropdown} from "@ant-design/pro-table";
 
 
 
@@ -35,6 +39,58 @@ const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.InterfaceInfo>();
   const [selectedRowsState, setSelectedRows] = useState<API.InterfaceInfo[]>([]);
+
+
+
+
+  /**
+   * @en-US online
+   * @zh-CN 上线接口
+   * @param fields
+   */
+  const handleOnline = async (fields: API.IdRequest) => {
+    const hide = message.loading('正在上线');
+    try {
+      await onlineInterfaceInfoUsingPost({
+        id:fields.id
+      });
+      hide();
+      message.success('上线成功');
+      handleModalOpen(false)
+      //自动更新表单
+      actionRef.current?.reload();
+      return true;
+    } catch (error) {
+      hide();
+      message.error('online failed, please try again!');
+      return false;
+    }
+  };
+
+  /**
+   * @en-US online
+   * @zh-CN 上线接口
+   * @param fields
+   */
+  const handleOffline = async (fields: API.IdRequest) => {
+    const hide = message.loading('正在下线');
+    try {
+      await offlineInterfaceInfoUsingPost({
+        id:fields.id
+      });
+      hide();
+      message.success('下线成功');
+      handleModalOpen(false)
+      //自动更新表单
+      actionRef.current?.reload();
+      return true;
+    } catch (error) {
+      hide();
+      message.error('offering failed, please try again!');
+      return false;
+    }
+  };
+
 
   /**
    * @en-US Add node
@@ -113,91 +169,125 @@ const TableList: React.FC = () => {
     }
   };
 
+
+
   const columns: ProColumns<API.InterfaceInfo>[] = [
     {
       title: 'id',
       dataIndex: 'id',
       valueType: 'text',
-      search:false,
-      hideInForm:true,
-      width: 48,
+      search: false,
+      hideInForm: true,
+      width: 40,
     },
     {
       title: '接口名称',
       dataIndex: 'name',
       valueType: 'text',
+      width:100,
       formItemProps: {
-        rules:[{
-          required:true,
-          //不设置就是默认提示
-          //message:''
-        }]
-      }
+        rules: [
+          {
+            required: true,
+            //不设置就是默认提示
+            //message:''
+          },
+        ],
+      },
     },
     {
       title: '描述',
+      width:150,
       dataIndex: 'description',
-      valueType: 'textarea',
       //显示缩略
+      valueType: 'text',
       ellipsis: true,
     },
     {
       title: '请求方法',
       dataIndex: 'method',
       valueType: 'select',
+      width:80,
       valueEnum: {
-        'get': {text: 'GET'},
-        'post': {text: 'POST'},
-        'delete': {text: 'DELETE'},
-        'put': {text: 'PUT'},
-        'patch': {text: 'PATCH'},
-        'head': {text: 'HEAD'},
-        'options': {text: 'OPTIONS'},
+        get: { text: 'GET' },
+        post: { text: 'POST' },
+        delete: { text: 'DELETE' },
+        put: { text: 'PUT' },
+        patch: { text: 'PATCH' },
+        head: { text: 'HEAD' },
+        options: { text: 'OPTIONS' },
       },
       formItemProps: {
-        rules:[{
-          required:true,
-          //不设置默认提示
-          //message:''
-        }]
-      }
+        rules: [
+          {
+            required: true,
+            //不设置默认提示
+            //message:''
+          },
+        ],
+      },
     },
     {
       title: '接口地址',
       dataIndex: 'url',
       valueType: 'textarea',
+      ellipsis: true,
       formItemProps: {
-        rules:[{
-          required:true,
-          //不设置默认提示
-          //message:''
-        }]
-      }
+        rules: [
+          {
+            required: true,
+            //不设置默认提示
+            //message:''
+          },
+        ],
+      },
+    },
+    {
+      title: '请求参数',
+      dataIndex: 'requestParams',
+      valueType: 'jsonCode',
+      hideInSearch:true,
+      width:270,
+      formItemProps: {
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
     {
       title: '请求头',
       dataIndex: 'requestHeader',
-      valueType: 'textarea',
+      valueType: 'jsonCode',
+      width: 280,
       formItemProps: {
-        rules:[{
-          required:true,
-        }]
-      }
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
     {
       title: '响应头',
       dataIndex: 'responseHeader',
-      valueType: 'textarea',
+      valueType: 'jsonCode',
+      width: 280,
       formItemProps: {
-        rules:[{
-          required:true,
-        }]
-      }
+        rules: [
+          {
+            required: true,
+          },
+        ],
+      },
     },
+
     {
       title: '状态',
       dataIndex: 'status',
       hideInForm: true,
+      width: '5%',
       valueEnum: {
         0: {
           text: '关闭',
@@ -218,10 +308,11 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title:'创建时间',
-      dataIndex:'createTime',
-      valueType:"dateTime",
-      hideInSearch:true
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'dateTime',
+      hideInSearch: true,
+      hideInForm: true,
     },
     {
       title: '创建时间',
@@ -239,17 +330,19 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title:'更新时间',
-      dataIndex:'updateTime',
-      valueType:"dateTime",
-      hideInForm:true,
-      hideInSearch:true
+      title: '更新时间',
+      dataIndex: 'updateTime',
+      valueType: 'dateTime',
+      hideInForm: true,
+      hideInSearch: true,
     },
     {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
-      render: (_, record) => [
+      width:110,
+      fixed:'right',
+      render: (text, record, _, action) => [
         <a
           key="config"
           onClick={() => {
@@ -257,13 +350,41 @@ const TableList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          修改
+          编辑
         </a>,
-        <a key="config" onClick={()=>{
-          handleRemove(record);
-        }}>
-          删除
-        </a>,
+        record.status === 0 ? (
+          <a
+            key="online"
+            onClick={() => {
+              handleOnline(record);
+            }}
+          >
+            上线
+          </a>
+        ) : (
+          <a
+            key="offline"
+            onClick={() => {
+              handleOffline(record);
+            }}
+          >
+            下线
+          </a>
+        ),
+        <TableDropdown
+          key="actionGroup"
+          onSelect={() => action?.reload()}
+          menus={[
+            { key: 'copy', name: '复制' },
+            {
+              key: 'delete',
+              name: '删除',
+              onClick: () => {
+                handleRemove(record);
+              },
+            },
+          ]}
+        />,
       ],
     },
   ];
@@ -273,6 +394,7 @@ const TableList: React.FC = () => {
         headerTitle={'接口列表'}
         actionRef={actionRef}
         rowKey="key"
+        scroll={{x:1800}} //屏幕宽度不够，显示滚动条
         pagination={{
           pageSize: 5,
           onChange: (page) => console.log(page),
@@ -291,25 +413,28 @@ const TableList: React.FC = () => {
             <PlusOutlined /> 新建
           </Button>,
         ]}
-        request={ async (params: U & {
-          pageSize?: number;
-          current?: number;
-          keyword?: string;
-        }, sort: Record<string, SortOrder>, filter: Record<string, (string | number)[] | null>)=>{
-          const res=await listInterfaceInfoByPageUsingGet({
-            ...params
-          })
-         if (res.data){
-           return{
-             data: res.data.records || [],
-             success: true,
-             total: res.data.total,
-        }}
+        request={async (
+          params: U & {
+            pageSize?: number;
+            current?: number;
+            keyword?: string;
+          },
+          sort: Record<string, SortOrder>,
+          filter: Record<string, (string | number)[] | null>,
+        ) => {
+          const res = await listInterfaceInfoByPageUsingGet({
+            ...params,
+          });
+          if (res.data) {
+            return {
+              data: res.data.records || [],
+              success: true,
+              total: res.data.total,
+            };
+          }
         }}
         columns={columns}
-
       />
-
 
       <UpdateForm
         columns={columns}
@@ -329,7 +454,7 @@ const TableList: React.FC = () => {
             setCurrentRow(undefined);
           }
         }}
-       visible={updateModalOpen}
+        visible={updateModalOpen}
         values={currentRow || {}}
       />
 

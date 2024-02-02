@@ -3,20 +3,21 @@ package com.pjieyi.yiapi.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.pjieyi.yiapi.annotation.AuthCheck;
-import com.pjieyi.yiapi.common.BaseResponse;
-import com.pjieyi.yiapi.common.DeleteRequest;
-import com.pjieyi.yiapi.common.ErrorCode;
-import com.pjieyi.yiapi.common.ResultUtils;
+import com.pjieyi.yiapi.common.*;
 import com.pjieyi.yiapi.constant.CommonConstant;
 import com.pjieyi.yiapi.exception.BusinessException;
 import com.pjieyi.yiapi.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import com.pjieyi.yiapi.model.dto.interfaceinfo.InterfaceInfoInvokeRequest;
 import com.pjieyi.yiapi.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
 import com.pjieyi.yiapi.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
 import com.pjieyi.yiapi.model.entity.InterfaceInfo;
 import com.pjieyi.yiapi.model.entity.User;
+import com.pjieyi.yiapi.model.enums.InterfaceInfoStatusEnum;
 import com.pjieyi.yiapi.service.InterfaceInfoService;
 import com.pjieyi.yiapi.service.UserService;
+import com.pjieyi.yiapiclientsdk.client.YiApiClient;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,8 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
- * 接口信息
- *
+ * 接口管理
  * @author pjieyi
  */
 @RestController
@@ -41,6 +41,9 @@ public class InterfaceInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private YiApiClient yiApiClient;
 
     // region 增删改查
 
@@ -227,5 +230,109 @@ public class InterfaceInfoController {
     }
 
     // endregion
+
+    /**
+     * 上线接口
+     * @param idRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/online")
+    @AuthCheck(mustRole = "admin") //管理员才能调用
+    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                     HttpServletRequest request) {
+        //校验参数
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1.判断接口是否存在
+        InterfaceInfo interfaceId = interfaceInfoService.getById(idRequest.getId());
+        if (interfaceId==null){
+            //接口不存在
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
+        }
+        //2.判断接口是否可以调用
+        //todo 动态的修改 接口上线只能管理员能操作，是否不需要验证接口
+        //先模拟调用接口
+        com.pjieyi.yiapiclientsdk.model.User user=new com.pjieyi.yiapiclientsdk.model.User();
+        user.setName("pjieyi");
+        String nameByPostRestful = yiApiClient.getNameByPostRestful(user);
+        if (StringUtils.isAnyBlank(nameByPostRestful)){
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"接口验证失败");
+        }
+        InterfaceInfo info=new InterfaceInfo();
+        info.setId(idRequest.getId());
+        //3.修改接口数据库中的状态字段为上线
+        info.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean result = interfaceInfoService.updateById(info);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 下线接口
+     * @param idRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/offline")
+    @AuthCheck(mustRole = "admin")
+    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest,
+                                                     HttpServletRequest request) {
+        //校验参数
+        if (idRequest == null || idRequest.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1.判断接口是否存在
+        InterfaceInfo interfaceId = interfaceInfoService.getById(idRequest.getId());
+        if (interfaceId==null){
+            //接口不存在
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
+        }
+        InterfaceInfo info=new InterfaceInfo();
+        info.setId(idRequest.getId());
+        //3.修改接口数据库中的状态字段为下线
+        info.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean result = interfaceInfoService.updateById(info);
+        return ResultUtils.success(result);
+
+    }
+
+    /**
+     * 测试调用
+     * @param interfaceInfoInvoke
+     * @param request
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<String> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvoke,
+                                                      HttpServletRequest request) {
+        //校验参数
+        if (interfaceInfoInvoke == null || interfaceInfoInvoke.getId() <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //1.判断接口是否存在
+        InterfaceInfo interfaceId = interfaceInfoService.getById(interfaceInfoInvoke.getId());
+        if (interfaceId==null){
+            //接口不存在
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR,"接口不存在");
+        }
+        String userRequestParams = interfaceInfoInvoke.getUserRequestParams();
+        //获取当前用户
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser==null){
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        String accessKey = loginUser.getAccessKey();
+        String secretKey = loginUser.getSecretKey();
+        //创建客户端
+        YiApiClient apiClient=new YiApiClient(accessKey,secretKey);
+        // 我们只需要进行测试调用，所以我们需要解析传递过来的参数。
+        Gson gson=new Gson();
+        // 将用户请求参数转换为com.pjieyi.yiapiclientsdk.model.User对象
+        com.pjieyi.yiapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.pjieyi.yiapiclientsdk.model.User.class);
+        String result = yiApiClient.getNameByPostRestful(user);
+        return ResultUtils.success(result);
+
+    }
 
 }

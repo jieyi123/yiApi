@@ -1,5 +1,6 @@
 package com.pjieyi.yiapi.service.impl;
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pjieyi.yiapi.common.ErrorCode;
@@ -91,11 +92,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             }
             // 2. 加密
             String encryptPassword = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+             //根据用户名设置唯一accessKey secretKey
+            String secretKey = DigestUtil.sha1Hex(SALT+userAccount);
+            String accessKey = DigestUtil.md5Hex(SALT+userAccount);
+
+
             // 3. 插入数据
             User user = new User();
             user.setUserAccount(userAccount);
             user.setUserPassword(encryptPassword);
             user.setPhone(phone);
+            user.setAccessKey(accessKey);
+            user.setSecretKey(secretKey);
             boolean saveResult = this.save(user);
             if (!saveResult) {
                 throw new BusinessException(ErrorCode.SYSTEM_ERROR, "注册失败，数据库错误");

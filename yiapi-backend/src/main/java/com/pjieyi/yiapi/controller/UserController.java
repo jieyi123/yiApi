@@ -35,7 +35,7 @@ import static com.pjieyi.yiapi.utils.ValidateCodeUtils.generateValidateCode4Stri
  */
 @RestController
 @RequestMapping("/user")
-@Api(tags = "用户相关接口")
+//@Api(tags = "用户相关接口")
 public class UserController {
 
     @Resource
