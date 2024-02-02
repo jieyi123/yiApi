@@ -5,7 +5,7 @@ import com.pjieyi.yiapi.common.ErrorCode;
 /**
  * 自定义异常类
  *
- * @author yupi
+ * @author pjieyi
  */
 public class BusinessException extends RuntimeException {
 

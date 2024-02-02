@@ -1,5 +1,6 @@
 package com.pjieyi.yiapi.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
@@ -7,6 +8,7 @@ import com.pjieyi.yiapi.common.BaseResponse;
 import com.pjieyi.yiapi.common.DeleteRequest;
 import com.pjieyi.yiapi.common.ErrorCode;
 import com.pjieyi.yiapi.common.ResultUtils;
+import com.pjieyi.yiapi.model.dto.response.CaptureResponse;
 import com.pjieyi.yiapi.model.dto.user.*;
 import com.pjieyi.yiapi.model.entity.User;
 import com.pjieyi.yiapi.model.vo.UserVO;
@@ -19,12 +21,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.pjieyi.yiapi.utils.ValidateCodeUtils.generateValidateCode;
+import static com.pjieyi.yiapi.utils.ValidateCodeUtils.generateValidateCode4String;
 
 /**
  * 用户接口
- * @author yupi
+ * @author pjieyi
  */
 @RestController
 @RequestMapping("/user")
@@ -38,7 +45,6 @@ public class UserController {
 
     /**
      * 用户注册
-     *
      * @param userRegisterRequest
      * @return
      */
@@ -51,16 +57,19 @@ public class UserController {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
-            return null;
+        String phone=userRegisterRequest.getPhone();
+        String verifyCode = userRegisterRequest.getVerifyCode();
+        if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword,phone,verifyCode)) {
+            return ResultUtils.error(ErrorCode.PARAMS_ERROR);
         }
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword,phone,verifyCode);
         return ResultUtils.success(result);
     }
 
+
+
     /**
      * 用户登录
-     *
      * @param userLoginRequest
      * @param request
      * @return
@@ -71,13 +80,94 @@ public class UserController {
         if (userLoginRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        String userAccount = userLoginRequest.getUserAccount();
-        String userPassword = userLoginRequest.getUserPassword();
-        if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+        if (userLoginRequest.getType().equals("account")) {
+            String userAccount = userLoginRequest.getUserAccount();
+            String userPassword = userLoginRequest.getUserPassword();
+            if (StringUtils.isAnyBlank(userAccount, userPassword)) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            }
+            User user = userService.userLogin(userAccount, userPassword, request);
+            return ResultUtils.success(user);
+        }else{ //手机号登录
+            String phone = userLoginRequest.getPhone();
+            String captcha = userLoginRequest.getCaptcha();
+            if (StringUtils.isAnyBlank(phone,captcha)){
+                throw new BusinessException(ErrorCode.PARAMS_ERROR);
+            }
+            User user=userService.userLogin(request,phone,captcha);
+            return ResultUtils.success(user);
+
+        }
+    }
+
+
+    /**
+     * 发送验证码
+     * @param phone 手机号
+     * @return
+     */
+    @GetMapping("/captcha")
+    public BaseResponse getCaptcha(@RequestParam String phone){
+        if (StringUtils.isAnyBlank(phone)){
+            throw new BusinessException((ErrorCode.PARAMS_ERROR));
+        }
+        userService.getCaptcha(phone);
+        return ResultUtils.success(phone);
+    }
+
+    /**
+     * 图片二次验证
+     * @param getParams 验证参数
+     * @return
+     */
+    @GetMapping("/verifyCapture")
+    public BaseResponse verifyCapture(@RequestParam Map<String,String> getParams){
+        CaptureResponse captureResponse = userService.identifyCapture(getParams);
+        return ResultUtils.success(captureResponse);
+    }
+
+    /**
+     * 找回密码
+     * @param retrievePasswordRequest
+     * @return
+     */
+    @PostMapping("/retrievePassword")
+    public BaseResponse retrievePassword(@RequestBody RetrievePasswordRequest retrievePasswordRequest){
+        if (retrievePasswordRequest==null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        User user = userService.userLogin(userAccount, userPassword, request);
-        return ResultUtils.success(user);
+        //校验参数
+        String userPassword = retrievePasswordRequest.getUserPassword();
+        String checkPassword = retrievePasswordRequest.getCheckPassword();
+        String phone = retrievePasswordRequest.getPhone();
+        String verifyCode = retrievePasswordRequest.getVerifyCode();
+        if (StringUtils.isAnyBlank(userPassword,checkPassword,phone,verifyCode)){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long userId = userService.retrievePassword(userPassword, checkPassword, phone, verifyCode);
+        return ResultUtils.success(userId);
+    }
+
+    /**
+     * 修改密码
+     * @param passwordRequest
+     * @return 用户id
+     */
+    @PostMapping("/updatePassword")
+    public BaseResponse updatePassword(@RequestBody UserPasswordRequest passwordRequest){
+        if (passwordRequest==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //校验参数
+        Long id = passwordRequest.getId();
+        String oldPassword = passwordRequest.getOldPassword();
+        String newPassword = passwordRequest.getNewPassword();
+        String confirmPassword = passwordRequest.getConfirmPassword();
+        if (StringUtils.isAnyBlank(oldPassword,newPassword,confirmPassword) ||id==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        userService.updatePassword(id,oldPassword,newPassword,confirmPassword);
+        return ResultUtils.success(id);
     }
 
     /**
@@ -149,7 +239,6 @@ public class UserController {
 
     /**
      * 更新用户
-     *
      * @param userUpdateRequest
      * @param request
      * @return
@@ -192,10 +281,12 @@ public class UserController {
      */
     @GetMapping("/list")
     public BaseResponse<List<UserVO>> listUser(UserQueryRequest userQueryRequest, HttpServletRequest request) {
+
         User userQuery = new User();
         if (userQueryRequest != null) {
             BeanUtils.copyProperties(userQueryRequest, userQuery);
         }
+
         QueryWrapper<User> queryWrapper = new QueryWrapper<>(userQuery);
         List<User> userList = userService.list(queryWrapper);
         List<UserVO> userVOList = userList.stream().map(user -> {
@@ -222,7 +313,42 @@ public class UserController {
             current = userQueryRequest.getCurrent();
             size = userQueryRequest.getPageSize();
         }
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>(userQuery);
+
+        LambdaQueryWrapper<User> queryWrapper=new LambdaQueryWrapper<>();
+        String userAccount = userQuery.getUserAccount();
+        String userRole = userQuery.getUserRole();
+        String userName = userQuery.getUserName();
+        String phone = userQuery.getPhone();
+        String email = userQuery.getEmail();
+        String startTime = userQueryRequest.getStartTime();
+        String endTime = userQueryRequest.getEndTime();
+        Integer gender = userQuery.getGender();
+        //模糊查询
+        if (StringUtils.isNotEmpty(userAccount)){
+            queryWrapper.like(User::getUserAccount,userAccount);
+        }
+        if (StringUtils.isNotEmpty(userName)){
+            queryWrapper.like(User::getUserName,userName);
+        }
+        if (StringUtils.isNotEmpty(phone)){
+            queryWrapper.like(User::getPhone,phone);
+        }
+        if (StringUtils.isNotEmpty(email)){
+            queryWrapper.like(User::getEmail,email);
+        }
+        if(gender != null){
+            queryWrapper.like(User::getGender,gender);
+        }
+        if (StringUtils.isNotEmpty(userRole)){
+            queryWrapper.like(User::getUserRole,userRole);
+        }
+        if (StringUtils.isNotEmpty(startTime) && StringUtils.isNoneEmpty(endTime)){
+            //大于等于
+            queryWrapper.ge(User::getCreateTime,startTime);
+            //小于等于
+            queryWrapper.le(User::getCreateTime,endTime);
+        }
+        queryWrapper.orderByDesc(User::getUpdateTime);
         Page<User> userPage = userService.page(new Page<>(current, size), queryWrapper);
         Page<UserVO> userVOPage = new PageDTO<>(userPage.getCurrent(), userPage.getSize(), userPage.getTotal());
         List<UserVO> userVOList = userPage.getRecords().stream().map(user -> {

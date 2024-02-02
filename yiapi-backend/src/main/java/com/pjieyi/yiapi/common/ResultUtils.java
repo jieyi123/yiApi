@@ -3,7 +3,7 @@ package com.pjieyi.yiapi.common;
 /**
  * 返回工具类
  *
- * @author yupi
+ * @author pjieyi
  */
 public class ResultUtils {
 

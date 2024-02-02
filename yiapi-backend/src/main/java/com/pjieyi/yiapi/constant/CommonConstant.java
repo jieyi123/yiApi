@@ -3,7 +3,7 @@ package com.pjieyi.yiapi.constant;
 /**
  * 通用常量
  *
- * @author yupi
+ * @author pjieyi
  */
 public interface CommonConstant {
 

@@ -1,5 +1,4 @@
 import { Footer } from '@/components';
-import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
   AlipayCircleOutlined,
@@ -15,12 +14,13 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { Helmet, history, useModel } from '@umijs/max';
-import { Alert, Tabs, message } from 'antd';
+import {Helmet, history, Link, useModel} from '@umijs/max';
+import {Alert, Tabs, message, Space, Divider} from 'antd';
 import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
-import { flushSync } from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
+import {userLoginUsingPost} from "@/services/yiapi-backend/userController";
+import {FormattedMessage} from "react-intl";
 const useStyles = createStyles(({ token }) => {
   return {
     action: {
@@ -66,10 +66,10 @@ const ActionIcons = () => {
     </>
   );
 };
-const Lang = () => {
-  const { styles } = useStyles();
-  return;
-};
+// const Lang = () => {
+//   // const { styles } = useStyles();
+//   return;
+// };
 const LoginMessage: React.FC<{
   content: string;
 }> = ({ content }) => {
@@ -85,43 +85,34 @@ const LoginMessage: React.FC<{
   );
 };
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const {  setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
-      });
-    }
-  };
-  const handleSubmit = async (values: API.LoginParams) => {
+  const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
       // 登录
-      const msg = await login({
-        ...values,
-        type,
+      const res = await userLoginUsingPost({
+        ...values,type
       });
-      if (msg.status === 'ok') {
+      if (res.data){
         const defaultLoginSuccessMessage = '登录成功！';
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
         const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
+        setTimeout(()=>{
+          history.push(urlParams.get('redirect') || '/');
+        },100)
+        setInitialState({
+          loginUser:res.data
+        });
         return;
+      }else{
+        message.error(res.message);
       }
-      console.log(msg);
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = '登录失败，请重试！';
       console.log(error);
-      message.error(defaultLoginFailureMessage);
+      message.error(error.message || defaultLoginFailureMessage);
     }
   };
   const { status, type: loginType } = userLoginState;
@@ -132,7 +123,7 @@ const Login: React.FC = () => {
           {'登录'}- {Settings.title}
         </title>
       </Helmet>
-      <Lang />
+      {/*<Lang />*/}
       <div
         style={{
           flex: '1',
@@ -144,15 +135,15 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle={'Ant Design 是西湖区最具影响力的 Web 设计规范'}
+          logo={<img alt="logo" src="/ArtStation.ico" />}
+          title="API开放平台"
+          subTitle={'一站式管理接口'}
           initialValues={{
             autoLogin: true,
           }}
           actions={['其他登录方式 :', <ActionIcons key="icons" />]}
           onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
+            await handleSubmit(values as API.UserLoginRequest);
           }}
         >
           <Tabs
@@ -177,12 +168,12 @@ const Login: React.FC = () => {
           {type === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="userAccount"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
                 }}
-                placeholder={'用户名: admin or user'}
+                placeholder={'用户名:'}
                 rules={[
                   {
                     required: true,
@@ -191,12 +182,12 @@ const Login: React.FC = () => {
                 ]}
               />
               <ProFormText.Password
-                name="password"
+                name="userPassword"
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,
                 }}
-                placeholder={'密码: ant.design'}
+                placeholder={'密码:'}
                 rules={[
                   {
                     required: true,
@@ -215,7 +206,7 @@ const Login: React.FC = () => {
                   size: 'large',
                   prefix: <MobileOutlined />,
                 }}
-                name="mobile"
+                name="phone"
                 placeholder={'请输入手机号！'}
                 rules={[
                   {
@@ -236,6 +227,7 @@ const Login: React.FC = () => {
                 captchaProps={{
                   size: 'large',
                 }}
+                phoneName="phone"
                 placeholder={'请输入验证码！'}
                 captchaTextRender={(timing, count) => {
                   if (timing) {
@@ -257,7 +249,7 @@ const Login: React.FC = () => {
                   if (!result) {
                     return;
                   }
-                  message.success('获取验证码成功！验证码为：1234');
+                  message.success('获取验证码成功！');
                 }}
               />
             </>
@@ -267,16 +259,13 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              自动登录
-            </ProFormCheckbox>
-            <a
-              style={{
-                float: 'right',
-              }}
-            >
-              忘记密码 ?
-            </a>
+            <Space split={<Divider type="vertical"/>} size="middle">
+              <ProFormCheckbox noStyle name="autoLogin">
+                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录"/>
+              </ProFormCheckbox>
+              <Link to="/user/register">用户注册</Link>
+              <Link to="/user/retrieve">忘记密码</Link>
+            </Space>
           </div>
         </LoginForm>
       </div>

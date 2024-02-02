@@ -2,7 +2,11 @@ export default [
   {
     path: '/user',
     layout: false,
-    routes: [{ name: '登录', path: '/user/login', component: './User/Login' }],
+    routes: [
+      { name: '登录', path: '/user/login', component: './User/Login' },
+      { name: '注册', path: '/user/register', component: './User/Register' },
+      { name: '忘记密码', path: '/user/retrieve', component: './User/RetrievePassword' },
+    ],
   },
   { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   {
@@ -11,11 +15,13 @@ export default [
     icon: 'crown',
     access: 'canAdmin',
     routes: [
-      { path: '/admin', redirect: '/admin/sub-page' },
-      { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
+      { path: '/admin', redirect: '/admin/user-manager' },
+      { path: '/admin/user-manager', icon: 'info',name: '用户管理', component: './Admin/UserManager' },
+      { path: '/admin/interface-info', icon: 'info',name: '接口管理', component: './Admin/InterfaceInfo' },
     ],
   },
-  { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
+  { name: '个人设置', icon: 'user', path: '/user-settings', component: './UserSettings' },
   { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
 ];
+

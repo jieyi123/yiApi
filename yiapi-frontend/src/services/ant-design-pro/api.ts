@@ -32,6 +32,30 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
   });
 }
 
+
+export async function getVerifyCode(
+  params?: {
+    lot_number?: string;
+    captcha_output?: string;
+    pass_token?: string;
+    gen_time?: string;
+    captcha_id?: string;
+    sign_token?: string;
+  }
+): Promise<API.BaseResponse> {
+  try {
+    const response = await request<API.BaseResponse>('/api/user/verifyCapture', {
+      method: 'GET',
+      params,
+    });
+    return response;
+  } catch (error:any) {
+    // 处理错误，例如记录日志或抛出异常
+    throw new Error(`Failed to fetch verifyCode: ${error.message}`);
+  }
+}
+
+
 /** 此处后端没有提供注释 GET /api/notices */
 export async function getNotices(options?: { [key: string]: any }) {
   return request<API.NoticeIconList>('/api/notices', {

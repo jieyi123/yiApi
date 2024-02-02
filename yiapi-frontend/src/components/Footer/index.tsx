@@ -3,11 +3,21 @@ import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
 
 const Footer: React.FC = () => {
+
+  const currentYear = new Date().getFullYear();
   return (
     <DefaultFooter
       style={{
         background: 'none',
       }}
+      copyright={
+        <span>
+         {currentYear} API开放平台 |  {' '}
+          <a style={{color: 'rgb(31, 31, 31)'}}  href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+        渝ICP备2024020977号-1
+      </a>
+      </span>
+      }
       links={[
         {
           key: 'Ant Design Pro',
@@ -18,7 +28,7 @@ const Footer: React.FC = () => {
         {
           key: 'github',
           title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          href: 'https://github.com/jieyi123',
           blankTarget: true,
         },
         {

@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * 用户更新请求
  *
- * @author yupi
+ * @author pjieyi
  */
 @Data
 public class UserUpdateRequest implements Serializable {
@@ -31,6 +31,16 @@ public class UserUpdateRequest implements Serializable {
      * 用户头像
      */
     private String userAvatar;
+
+    /**
+     * 用户邮箱
+     */
+    private String email;
+
+    /**
+     * 电话
+     */
+    private String phone;
 
     /**
      * 性别

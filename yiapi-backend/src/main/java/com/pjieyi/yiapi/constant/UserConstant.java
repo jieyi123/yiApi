@@ -3,7 +3,7 @@ package com.pjieyi.yiapi.constant;
 /**
  * 用户常量
  *
- * @author yupi
+ * @author pjieyi
  */
 public interface UserConstant {
 

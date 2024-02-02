@@ -1,16 +1,17 @@
 package com.pjieyi.yiapi.service;
 
+import com.pjieyi.yiapi.exception.BusinessException;
 import com.pjieyi.yiapi.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import javax.annotation.Resource;
+
 
 /**
  * 用户服务测试
  *
- * @author yupi
+ * @author pjieyi
  */
 @SpringBootTest
 class UserServiceTest {
@@ -45,37 +46,25 @@ class UserServiceTest {
         Assertions.assertNotNull(user);
     }
 
-    @Test
-    void userRegister() {
-        String userAccount = "yupi";
-        String userPassword = "";
-        String checkPassword = "123456";
-        try {
-            long result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yu";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yupi";
-            userPassword = "123456";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yu pi";
-            userPassword = "12345678";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            checkPassword = "123456789";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "dogYupi";
-            checkPassword = "12345678";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-            userAccount = "yupi";
-            result = userService.userRegister(userAccount, userPassword, checkPassword);
-            Assertions.assertEquals(-1, result);
-        } catch (Exception e) {
 
+    @Test
+    void retrievePassword() {
+        String userPassword="123456789";
+        String checkPassword="123456789";
+        String phone="13232323232";
+        String verifyCode="1231";
+        try {
+            long id = userService.retrievePassword(userPassword, checkPassword, phone, verifyCode);
+            Assertions.assertTrue(id>0);
+        }catch (BusinessException e){
+            e.printStackTrace();
         }
     }
+
+    @Test
+    void testAliyunSMS(){
+
+    }
+
+
 }

@@ -102,6 +102,7 @@ public class Post implements Serializable {
 
     /**
      * 是否删除
+     * 逻辑删除
      */
     @TableLogic
     private Integer isDelete;

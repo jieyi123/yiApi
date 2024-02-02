@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * 用户登录请求体
  *
- * @author yupi
+ * @author pjieyi
  */
 @Data
 public class UserLoginRequest implements Serializable {
@@ -17,4 +17,9 @@ public class UserLoginRequest implements Serializable {
     private String userAccount;
 
     private String userPassword;
+
+    private String phone;
+    private String captcha;
+    //登录方式  mobile手机号  account账户
+    private String type;
 }

@@ -23,6 +23,27 @@ declare namespace API {
     phone?: string;
   };
 
+  type IdentifyCode ={
+    status?:string;
+    result?:string;
+    reason?:string;
+    code?:string;
+    msg?:string;
+    captchaArgs?:{
+      usedType?:string;
+      userIp?:string;
+      lotNumber?:string
+      scene?:string;
+      referer?:string;
+    }
+  }
+
+  type BaseResponse = {
+    code?: number;
+    data?: IdentifyCode;
+    message?: string;
+  };
+
   type LoginResult = {
     status?: string;
     type?: string;

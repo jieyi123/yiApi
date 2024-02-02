@@ -10,7 +10,7 @@ import java.util.Date;
 /**
  * 用户查询请求
  *
- * @author yupi
+ * @author pjieyi
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -31,6 +31,16 @@ public class UserQueryRequest extends PageRequest implements Serializable {
     private String userAccount;
 
     /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 用户邮箱
+     */
+    private String email;
+
+    /**
      * 用户头像
      */
     private String userAvatar;
@@ -46,9 +56,14 @@ public class UserQueryRequest extends PageRequest implements Serializable {
     private String userRole;
 
     /**
-     * 创建时间
+     *查询  开始时间
      */
-    private Date createTime;
+    private String startTime;
+
+    /**
+     *查询  结束时间
+     */
+    private String endTime;
 
     /**
      * 更新时间

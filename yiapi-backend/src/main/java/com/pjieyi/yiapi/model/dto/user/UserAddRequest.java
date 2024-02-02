@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * 用户创建请求
  *
- * @author yupi
+ * @author pjieyi
  */
 @Data
 public class UserAddRequest implements Serializable {
@@ -26,6 +26,16 @@ public class UserAddRequest implements Serializable {
      * 用户头像
      */
     private String userAvatar;
+
+    /**
+     * 手机号
+     */
+    private String phone;
+
+    /**
+     * 用户邮箱
+     */
+    private String email;
 
     /**
      * 性别
