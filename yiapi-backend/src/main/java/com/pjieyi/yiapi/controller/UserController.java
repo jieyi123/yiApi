@@ -8,26 +8,21 @@ import com.pjieyi.yiapi.common.BaseResponse;
 import com.pjieyi.yiapi.common.DeleteRequest;
 import com.pjieyi.yiapi.common.ErrorCode;
 import com.pjieyi.yiapi.common.ResultUtils;
+import com.pjieyi.yiapi.exception.BusinessException;
 import com.pjieyi.yiapi.model.dto.response.CaptureResponse;
 import com.pjieyi.yiapi.model.dto.user.*;
 import com.pjieyi.yiapi.model.entity.User;
 import com.pjieyi.yiapi.model.vo.UserVO;
 import com.pjieyi.yiapi.service.UserService;
-import com.pjieyi.yiapi.exception.BusinessException;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.pjieyi.yiapi.utils.ValidateCodeUtils.generateValidateCode;
-import static com.pjieyi.yiapi.utils.ValidateCodeUtils.generateValidateCode4String;
 
 /**
  * 用户接口

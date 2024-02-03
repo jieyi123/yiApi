@@ -41,7 +41,7 @@ aliyun:
     accessKeySecret:
     bucketName:
   sms:
-    regionId:
+    regionId: cn-hangzhou
     accessKeyId:
     secret:
   captcha:
