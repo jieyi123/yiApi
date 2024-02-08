@@ -172,6 +172,16 @@ const BaseView: React.FC = () => {
                  0: {text: '女'},
                  1: {text: '男'}
                }}
+               options={[
+                 {
+                   value: 0,
+                   label: '女',
+                 },
+                 {
+                   value: 1,
+                   label: '男',
+                 },
+               ]}
                rules={[{ required: true, message: '请选择您的性别' }]}
               />
 

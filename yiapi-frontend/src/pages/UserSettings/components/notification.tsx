@@ -1,43 +1,70 @@
-import { List, Switch } from 'antd';
-import React, { Fragment } from 'react';
-
-type Unpacked<T> = T extends (infer U)[] ? U : T;
-
+import {Button, Descriptions, message, Space, Typography} from 'antd';
+import React, {Fragment, useState} from 'react';
+import ProCard from "@ant-design/pro-card";
+import {genKeyUsingPost, getKeyUsingGet} from "@/services/yiapi-backend/userController";
+import {requestConfig} from "@/requestConfig";
+const { Paragraph } = Typography;
 const NotificationView: React.FC = () => {
-  const getData = () => {
-    const Action = <Switch checkedChildren="开" unCheckedChildren="关" defaultChecked />;
-    return [
-      {
-        title: '账户密码',
-        description: '其他用户的消息将以站内信的形式通知',
-        actions: [Action],
-      },
-      {
-        title: '系统消息',
-        description: '系统消息将以站内信的形式通知',
-        actions: [Action],
-      },
-      {
-        title: '待办任务',
-        description: '待办任务将以站内信的形式通知',
-        actions: [Action],
-      },
-    ];
+
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<API.UserDevKeyVO>();
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const res = await getKeyUsingGet();
+      // console.log(res);
+      // console.log(res.data);
+      setData(res.data);
+    } catch (e: any) {
+      message.error('获取数据失败，' + e.message);
+    }
+    setLoading(false);
+    return;
   };
 
-  const data = getData();
+  const genKey = async () => {
+    try {
+      const res = await genKeyUsingPost();
+      setData(res.data);
+    } catch (e: any) {
+      message.error('获取数据失败，' + e.message);
+    }
+  };
+
+  const getSdk = () => {
+    window.location.href = requestConfig.baseURL + '/api/sdk';
+  };
+  const showDevKey = () => {
+    loadData();
+  };
+
   return (
-    <Fragment>
-      <List<Unpacked<typeof data>>
-        itemLayout="horizontal"
-        dataSource={data}
-        renderItem={(item) => (
-          <List.Item actions={item.actions}>
-            <List.Item.Meta title={item.title} description={item.description} />
-          </List.Item>
-        )}
-      />
-    </Fragment>
+    <ProCard
+      headerBordered={false}
+      extra={
+        <>
+          <Space>
+            <Button onClick={getSdk}>下载SDK</Button>
+            <Button onClick={showDevKey}>显示密钥</Button>
+            <Button onClick={genKey}>重新生成</Button>
+          </Space>
+        </>
+      }
+    >
+      <Descriptions column={1} bordered size="small" layout="vertical">
+        <Descriptions.Item label="accessKey">
+          <Paragraph copyable={{ tooltips: false }}>
+            {data?.accessKey ?? '******************'}
+          </Paragraph>
+        </Descriptions.Item>
+        <Descriptions.Item label="secretKey">
+          <Paragraph copyable={{ tooltips: false }}>
+            {data?.secretKey ??'******************'}
+          </Paragraph>
+        </Descriptions.Item>
+      </Descriptions>
+    </ProCard>
   );
 };
 

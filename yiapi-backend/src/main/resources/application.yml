@@ -48,7 +48,12 @@ aliyun:
     captchaId:
     captchaKey:
 
-yiapi-client:
-  access-key: 4ad918cf5ef7a74d9a71dbe836a3bc81
-  secret-key: c23e79e9432490b53af052e207f9a8495235b9e0
-
+dubbo:
+  application:
+    name: nacos-registry-demo-provider
+    # 指定使用 Dubbo 协议，且端口设置为 22221
+  protocol:
+    name: dubbo
+    port: 22221
+  registry:
+    address: nacos://localhost:8848

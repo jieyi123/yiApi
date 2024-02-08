@@ -3,7 +3,8 @@ package com.pjieyi.yiapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pjieyi.yiapi.model.dto.response.CaptureResponse;
-import com.pjieyi.yiapi.model.entity.User;
+import com.pjieyi.yiapi.model.vo.UserDevKeyVO;
+import com.pjieyi.yiapicommon.model.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -111,4 +112,11 @@ public interface UserService extends IService<User> {
      * @return 脱敏后的用户信息
      */
     public  User getSafetyUser(User user);
+
+    /**
+     * 获得用户密钥
+     * @param request
+     * @return
+     */
+    UserDevKeyVO genkey(HttpServletRequest request) ;
 }

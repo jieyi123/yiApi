@@ -1,7 +1,9 @@
 package com.pjieyi.yiapi.mapper;
 
-import com.pjieyi.yiapi.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.pjieyi.yiapicommon.model.entity.UserInterfaceInfo;
+
+import java.util.List;
 
 /**
 * @author pjy17
@@ -10,6 +12,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.pjieyi.yiapi.model.entity.UserInterfaceInfo
 */
 public interface UserInterfaceInfoMapper extends BaseMapper<UserInterfaceInfo> {
+
+    /**
+     * 统计接口调用次数
+     * @param limit 前几名
+     * @return
+     */
+    List<UserInterfaceInfo> listTopInvokeInterfaceInfo(int limit);
 
 }
 

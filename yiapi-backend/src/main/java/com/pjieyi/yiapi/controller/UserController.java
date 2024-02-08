@@ -11,9 +11,10 @@ import com.pjieyi.yiapi.common.ResultUtils;
 import com.pjieyi.yiapi.exception.BusinessException;
 import com.pjieyi.yiapi.model.dto.response.CaptureResponse;
 import com.pjieyi.yiapi.model.dto.user.*;
-import com.pjieyi.yiapi.model.entity.User;
+import com.pjieyi.yiapi.model.vo.UserDevKeyVO;
 import com.pjieyi.yiapi.model.vo.UserVO;
 import com.pjieyi.yiapi.service.UserService;
+import com.pjieyi.yiapicommon.model.entity.User;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -355,5 +356,40 @@ public class UserController {
         return ResultUtils.success(userVOPage);
     }
 
-    // endregion
+
+    /**
+     * 查看
+     * @param request
+     * @return
+     */
+    @GetMapping("/key")
+    public BaseResponse<UserDevKeyVO> getKey(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id", loginUser.getId());
+        queryWrapper.select("accessKey", "secretKey");
+        User user = userService.getOne(queryWrapper);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+        }
+        UserDevKeyVO userDevKeyVO = new UserDevKeyVO();
+        userDevKeyVO.setSecretKey(user.getSecretKey());
+        userDevKeyVO.setAccessKey(user.getAccessKey());
+        return ResultUtils.success(userDevKeyVO);
+    }
+
+    /**
+     * 更新
+     * @param request
+     * @return
+     */
+    @PostMapping("/gen/key")
+    public BaseResponse<UserDevKeyVO> genKey(HttpServletRequest request) {
+        UserDevKeyVO userDevKeyVO = userService.genkey(request);
+        return ResultUtils.success(userDevKeyVO);
+    }
+
 }

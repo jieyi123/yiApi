@@ -55,5 +55,11 @@ public class InterfaceInfoAddRequest implements Serializable {
     @ApiModelProperty("请求类型")
     private String method;
 
+    /**
+     * 参数示例
+     */
+    @ApiModelProperty("参数示例")
+    private String parameterExample;
+
     private static final long serialVersionUID = 1L;
 }

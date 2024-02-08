@@ -16,4 +16,6 @@ public interface CommonConstant {
      * 降序
      */
     String SORT_ORDER_DESC = " descend";
+
+    String CLASS_PATH="com.pjieyi.yiapiclientsdk.client.YiApiClient";
 }

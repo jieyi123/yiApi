@@ -1,5 +1,6 @@
 package com.pjieyi.yiapi.model.dto.interfaceinfo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -55,6 +56,11 @@ public class InterfaceInfoUpdateRequest implements Serializable {
      * 请求类型
      */
     private String method;
+
+    /**
+     * 参数示例
+     */
+    private String parameterExample;
 
     private static final long serialVersionUID = 1L;
 }

@@ -1,7 +1,7 @@
 package com.pjieyi.yiapi.mapper;
 
-import com.pjieyi.yiapi.model.entity.InterfaceInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.pjieyi.yiapicommon.model.entity.InterfaceInfo;
 
 /**
 * @author pjy17

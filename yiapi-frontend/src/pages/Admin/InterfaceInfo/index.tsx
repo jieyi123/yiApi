@@ -282,6 +282,12 @@ const TableList: React.FC = () => {
         ],
       },
     },
+    {
+      title: '参数示例',
+      dataIndex: 'parameterExample',
+      valueType: 'jsonCode',
+      width: 150,
+    },
 
     {
       title: '状态',
@@ -394,7 +400,7 @@ const TableList: React.FC = () => {
         headerTitle={'接口列表'}
         actionRef={actionRef}
         rowKey="key"
-        scroll={{x:1800}} //屏幕宽度不够，显示滚动条
+        scroll={{x:1900}} //屏幕宽度不够，显示滚动条
         pagination={{
           pageSize: 5,
           onChange: (page) => console.log(page),

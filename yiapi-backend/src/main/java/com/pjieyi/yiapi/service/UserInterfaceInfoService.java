@@ -1,8 +1,11 @@
 package com.pjieyi.yiapi.service;
 
-import com.pjieyi.yiapi.model.entity.InterfaceInfo;
-import com.pjieyi.yiapi.model.entity.UserInterfaceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pjieyi.yiapi.common.BaseResponse;
+import com.pjieyi.yiapi.model.vo.InterfaceInfoVO;
+import com.pjieyi.yiapicommon.model.entity.UserInterfaceInfo;
+
+import java.util.List;
 
 /**
 * @author pjy17
@@ -25,5 +28,11 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo> {
      * @return 调用结果
      */
     boolean invokeCount(long interfaceInfoId,long userId);
+
+    /**
+     * 统计每个接口总调用次数
+     * @return
+     */
+     List<InterfaceInfoVO> listTopInvokeInterfaceInfo();
 
 }

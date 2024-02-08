@@ -1,6 +1,6 @@
 package com.pjieyi.yiapi.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.pjieyi.yiapi.annotation.AuthCheck;
 import com.pjieyi.yiapi.common.BaseResponse;
 import com.pjieyi.yiapi.common.DeleteRequest;
@@ -9,19 +9,18 @@ import com.pjieyi.yiapi.common.ResultUtils;
 import com.pjieyi.yiapi.constant.UserConstant;
 import com.pjieyi.yiapi.exception.BusinessException;
 import com.pjieyi.yiapi.model.dto.userinterfaceinfo.UserInterfaceInfoAddRequest;
-import com.pjieyi.yiapi.model.dto.userinterfaceinfo.UserInterfaceInfoQueryRequest;
 import com.pjieyi.yiapi.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
-import com.pjieyi.yiapi.model.entity.User;
-import com.pjieyi.yiapi.model.entity.UserInterfaceInfo;
 import com.pjieyi.yiapi.service.UserInterfaceInfoService;
 import com.pjieyi.yiapi.service.UserService;
-import io.swagger.annotations.ApiOperation;
+import com.pjieyi.yiapicommon.model.entity.User;
+import com.pjieyi.yiapicommon.model.entity.UserInterfaceInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+
+import static com.pjieyi.yiapi.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户接口调用
@@ -133,12 +132,45 @@ public class UserInterfaceInfoController {
      */
     @GetMapping("/get")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<UserInterfaceInfo> getUserInterfaceInfoById(long id) {
+    public BaseResponse<UserInterfaceInfo> getUserInterfaceInfoById(long id,HttpServletRequest request) {
         if (id <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         UserInterfaceInfo userInterfaceInfo = userInterfaceInfoService.getById(id);
         return ResultUtils.success(userInterfaceInfo);
+    }
+
+    /**
+     * 用户免费获取接口调用次数
+     * @param userInterfaceInfoAddRequest
+     * @return
+     */
+    @PostMapping("/get/free")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> getUserInterfaceInfoById(@RequestBody UserInterfaceInfoAddRequest userInterfaceInfoAddRequest) {
+        if (userInterfaceInfoAddRequest ==null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long userId = userInterfaceInfoAddRequest.getUserId();
+        Long interfaceInfoId = userInterfaceInfoAddRequest.getInterfaceInfoId();
+        if (userId==null || interfaceInfoId ==null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //查询当前用户是否已经获取过接口
+        LambdaQueryWrapper<UserInterfaceInfo> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(UserInterfaceInfo::getInterfaceInfoId,interfaceInfoId);
+        queryWrapper.eq(UserInterfaceInfo::getUserId,userId);
+        UserInterfaceInfo one = userInterfaceInfoService.getOne(queryWrapper);
+        if (one!=null){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "您获取的次数太多了");
+        }
+        UserInterfaceInfo info=new UserInterfaceInfo();
+        info.setUserId(userId);
+        info.setInterfaceInfoId(interfaceInfoId);
+        //默认用户第一次有50次免费的调用次数
+        info.setLeftNum(50);
+        boolean result = userInterfaceInfoService.save(info);
+        return ResultUtils.success(result);
     }
 
 

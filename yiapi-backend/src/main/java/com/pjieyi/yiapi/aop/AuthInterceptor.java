@@ -2,10 +2,10 @@ package com.pjieyi.yiapi.aop;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.pjieyi.yiapi.common.ErrorCode;
-import com.pjieyi.yiapi.model.entity.User;
 import com.pjieyi.yiapi.service.UserService;
 import com.pjieyi.yiapi.annotation.AuthCheck;
 import com.pjieyi.yiapi.exception.BusinessException;
+import com.pjieyi.yiapicommon.model.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

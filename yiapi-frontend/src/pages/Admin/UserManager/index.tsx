@@ -162,16 +162,22 @@ const TableList: React.FC = () => {
           <Image src={record.userAvatar} width={80} />
         </div>
       ),
-      search: false
+      search: false,
+      hideInForm:true
     },
     {
       title: '性别',
       dataIndex: 'gender',
       valueType: 'select',
-      valueEnum: {
-        0: {text: '女'},
-        1: {text: '男'}
-      },
+      // valueEnum: {
+      //   0: {text: '女'},
+      //   1: {text: '男'}
+      // },
+      valueEnum: new Map([
+        [1, '男'],
+        [0, '女'],
+      ]),
+
       formItemProps: {
         rules:[{
           required:true,

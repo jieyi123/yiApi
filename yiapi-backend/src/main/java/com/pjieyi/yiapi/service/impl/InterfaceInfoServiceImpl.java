@@ -3,12 +3,9 @@ package com.pjieyi.yiapi.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pjieyi.yiapi.common.ErrorCode;
 import com.pjieyi.yiapi.exception.BusinessException;
-import com.pjieyi.yiapi.model.entity.InterfaceInfo;
-import com.pjieyi.yiapi.model.enums.PostGenderEnum;
-import com.pjieyi.yiapi.model.enums.PostReviewStatusEnum;
 import com.pjieyi.yiapi.service.InterfaceInfoService;
 import com.pjieyi.yiapi.mapper.InterfaceInfoMapper;
-import org.apache.commons.lang3.ObjectUtils;
+import com.pjieyi.yiapicommon.model.entity.InterfaceInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

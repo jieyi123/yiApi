@@ -18,12 +18,13 @@ export default [
     access: 'canAdmin',
     routes: [
       { path: '/admin', redirect: '/admin/user-manager' },
-      { path: '/admin/user-manager', icon: 'info',name: '用户管理', component: './Admin/UserManager' },
-      { path: '/admin/interface-info', icon: 'table',name: '接口管理', component: './Admin/InterfaceInfo' },
+      { path: '/admin/user-manager', icon: 'contactsOutlined',name: '用户管理', component: './Admin/UserManager' },
+      { path: '/admin/interface-info', icon: 'appstoreOutlined',name: '接口管理', component: './Admin/InterfaceInfo' },
+      { path: '/admin/interface-analysis', icon: 'analysis',name: '接口分析', component: './Admin/InterfaceAnalysis' },
     ],
   },
   { name: '个人设置', icon: 'user', path: '/user-settings', component: './UserSettings' },
-  { path: '/', redirect: '/welcome' },
+  { path: '/', redirect: '/index' },
   { path: '*', layout: false, component: './404' },
 ];
 

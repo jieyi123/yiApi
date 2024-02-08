@@ -1,16 +1,19 @@
 package com.pjieyi.yiapi.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pjieyi.yiapi.common.ErrorCode;
 import com.pjieyi.yiapi.mapper.UserMapper;
 import com.pjieyi.yiapi.model.dto.response.CaptureResponse;
-import com.pjieyi.yiapi.model.entity.User;
+import com.pjieyi.yiapi.model.vo.UserDevKeyVO;
 import com.pjieyi.yiapi.service.UserService;
 import com.pjieyi.yiapi.exception.BusinessException;
 import com.pjieyi.yiapi.utils.AliyunIdentifyCode;
 import com.pjieyi.yiapi.utils.SMSUtils;
+import com.pjieyi.yiapicommon.model.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.pjieyi.yiapi.constant.UserConstant.ADMIN_ROLE;
 import static com.pjieyi.yiapi.constant.UserConstant.USER_LOGIN_STATE;
@@ -374,7 +378,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         safeUser.setUserRole(user.getUserRole());
         safeUser.setCreateTime(user.getCreateTime());
         safeUser.setUserRole(user.getUserRole());
+        safeUser.setAccessKey(user.getAccessKey());
         return safeUser;
+    }
+
+
+    @Override
+    public UserDevKeyVO genkey(HttpServletRequest request) {
+        User loginUser = getLoginUser(request);
+        if(loginUser == null){
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
+        UserDevKeyVO userDevKeyVO = genKey(loginUser.getUserAccount());
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("userAccount",loginUser.getUserAccount());
+        updateWrapper.eq("id",loginUser.getId());
+        updateWrapper.set("accessKey",userDevKeyVO.getAccessKey());
+        updateWrapper.set("secretKey",userDevKeyVO.getSecretKey());
+        this.update(updateWrapper);
+        //重置登录用户的ak,sk信息
+        return userDevKeyVO;
+    }
+
+    private UserDevKeyVO genKey(String userAccount){
+        //根据用户名设置唯一accessKey secretKey
+        String secretKey = DigestUtil.sha1Hex(SALT+userAccount+ RandomUtil.randomNumbers(5));
+        String accessKey = DigestUtil.md5Hex(SALT+userAccount+ RandomUtil.randomNumbers(8));
+        UserDevKeyVO userDevKeyVO = new UserDevKeyVO();
+        userDevKeyVO.setAccessKey(accessKey);
+        userDevKeyVO.setSecretKey(secretKey);
+        return userDevKeyVO;
     }
 
 }

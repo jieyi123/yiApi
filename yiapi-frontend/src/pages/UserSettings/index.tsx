@@ -20,7 +20,7 @@ const PAGE_NAME_UPPER_CAMEL_CASE: React.FC = () => {
     base: '基本设置',
     security: '安全设置',
     binding: '账号绑定',
-    notification: '新消息通知',
+    notification: '开发者密钥',
   };
 
   const [initConfig, setInitConfig] = useState<PAGE_NAME_UPPER_CAMEL_CASEState>({

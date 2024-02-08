@@ -1,7 +1,7 @@
 package com.pjieyi.yiapi.service;
 
 import com.pjieyi.yiapi.exception.BusinessException;
-import com.pjieyi.yiapi.model.entity.User;
+import com.pjieyi.yiapicommon.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

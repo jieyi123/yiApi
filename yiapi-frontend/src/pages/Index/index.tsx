@@ -17,7 +17,7 @@ const Index: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
 
   // 定义异步加载数据的函数
-  const loadData = async (current = 1, pageSize = 5) => {
+  const loadData = async (current = 1, pageSize = 10) => {
     // 开始加载数据，设置 loading 状态为 true
     setLoading(true);
     try {
@@ -67,7 +67,6 @@ const Index: React.FC = () => {
             </List.Item>
           )
         }}
-
 
 
 
