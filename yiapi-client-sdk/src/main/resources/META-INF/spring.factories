@@ -1,0 +1,5 @@
+#上述配置项指定了要自动配置的类 com.pjieyi.yiapiclientsdk.config.YiApiClientConfig
+# 它是我们编写的配置类。通过在 spring.factories 文件中配置我们的配置类
+# Spring Boot 将会在应用启动时自动加载和实例化 YuApiClientConfig，并将其应用于我们的应用程序中
+# 这样，我们就可以使用自动配置生成的 yuApiClient 对象，而无需手动创建和配置。
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.pjieyi.yiapiclientsdk.config.YiApiClientConfig
