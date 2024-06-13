@@ -167,7 +167,7 @@ public class UserController {
     }
 
     /**
-     * 用户注销
+     * 退出登录
      * @param request
      * @return
      */

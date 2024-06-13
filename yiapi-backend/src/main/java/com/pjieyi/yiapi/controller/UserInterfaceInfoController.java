@@ -167,8 +167,8 @@ public class UserInterfaceInfoController {
         UserInterfaceInfo info=new UserInterfaceInfo();
         info.setUserId(userId);
         info.setInterfaceInfoId(interfaceInfoId);
-        //默认用户第一次有50次免费的调用次数
-        info.setLeftNum(50);
+        //默认用户第一次有5次免费的调用次数
+        info.setLeftNum(5);
         boolean result = userInterfaceInfoService.save(info);
         return ResultUtils.success(result);
     }

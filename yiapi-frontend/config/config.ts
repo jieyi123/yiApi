@@ -129,7 +129,7 @@ export default defineConfig({
   openAPI: [
     {
       requestLibPath: "import { request } from '@umijs/max'",
-      schemaPath: 'http://localhost:7529/api/v3/api-docs',
+      schemaPath: 'http://localhost:7528/api/v3/api-docs',
       projectName: 'yiapi-backend',
     },
   ],
@@ -138,4 +138,5 @@ export default defineConfig({
   },
   esbuildMinifyIIFE: true,
   requestRecord: {},
+  exportStatic: {}
 });

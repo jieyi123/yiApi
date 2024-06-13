@@ -2,6 +2,7 @@ import { PageContainer } from '@ant-design/pro-components';
 import React, { useEffect, useState } from 'react';
 import { List, message } from 'antd';
 import {listInterfaceInfoByPageUsingGet} from "@/services/yiapi-backend/interfaceInfoController";
+import {Link} from "@umijs/max";
 
 /**
  * 主页
@@ -58,9 +59,9 @@ const Index: React.FC = () => {
         renderItem={(item)=>{
           const apiLink=`/interface_info/${item.id}`;
           return(
-            <List.Item actions={[<a key={item.id} href={apiLink}>查看</a>]}>
+            <List.Item actions={[<Link key={item.id} to={apiLink}>查看</Link>]}>
               <List.Item.Meta
-                title={<a href={apiLink}>{item.name}</a>}
+                title={<Link to={apiLink}>{item.name}</Link>}
                 description={item.description}
               >
               </List.Item.Meta>
@@ -78,7 +79,7 @@ const Index: React.FC = () => {
             return '总数：' + total;
           },
           // 每页显示条数
-          pageSize: 5,
+          pageSize: 10,
           // 总数，从状态中获取
           total,
           // 切换页面触发的回调函数

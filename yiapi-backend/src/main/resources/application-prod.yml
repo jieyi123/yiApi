@@ -1,7 +1,15 @@
 #开发环境 --spring.profiles.active=prod
 spring:
+  application:
+    name: yiapi
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/yi_api
-    username: root
-    password: 123456
+    url: jdbc:mysql://47.108.67.9:3306/yi_api
+    username: pjieyi
+    password:
+  redis:
+    host: 47.108.67.9
+    port: 6379
+    password: pjieyi
+    database: 0
+    timeout: 10000

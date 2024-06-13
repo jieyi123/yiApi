@@ -17,7 +17,7 @@ const Settings: ProLayoutProps & {
   colorWeak: false,
   title: 'API开放平台',
   pwa: true,
-  logo: 'https://pjieyi.oss-cn-chengdu.aliyuncs.com/public/ArtStation.ico',
+  logo: 'http://aliyunoss.originai.icu/public/ArtStation.ico',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

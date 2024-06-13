@@ -13,14 +13,22 @@ spring:
   # session 失效时间（分钟）
   session:
     timeout: 86400
-    store-type: none
+    store-type: redis
   # redis 配置
   redis:
     port: 6379
     host: localhost
     database: 0
+  cloud:
+    nacos:
+      discovery:
+        enabled: true # 如果不想使用 Nacos 进行服务注册和发现, 设置为 false 即可
+        server-addr: localhost:8848 # Nacos 服务器地址
+        # server-addr: 127.0.0.1:8848,127.0.0.1:8849,127.0.0.1:8850 # Nacos 服务器地址
+        namespace: public
+
 server:
-  port: 7529
+  port: 7528
   servlet:
     context-path: /api
 
@@ -41,12 +49,13 @@ aliyun:
     accessKeySecret:
     bucketName:
   sms:
-    regionId: cn-hangzhou
+    regionId:
     accessKeyId:
     secret:
   captcha:
     captchaId:
     captchaKey:
+    domain: https://captcha.alicaptcha.com
 
 dubbo:
   application:
@@ -54,6 +63,10 @@ dubbo:
     # 指定使用 Dubbo 协议，且端口设置为 22221
   protocol:
     name: dubbo
-    port: 22221
+    port: -1
   registry:
     address: nacos://localhost:8848
+
+
+
+

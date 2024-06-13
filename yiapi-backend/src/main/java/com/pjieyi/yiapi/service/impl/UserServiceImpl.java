@@ -61,6 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword,String phone,String verifyCode) {
+
         // 1. 校验
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数为空");

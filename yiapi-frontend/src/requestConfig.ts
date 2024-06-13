@@ -1,6 +1,6 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
-import { message } from 'antd';
+import {extend} from "umi-request";
 
 // 错误处理方案： 错误类型
 enum ErrorShowType {
@@ -19,14 +19,19 @@ interface ResponseStructure {
   showType?: ErrorShowType;
 }
 
+
+
+
 /**
  * @name 错误处理
  * pro 自带的错误处理， 可以在这里做自己的改动
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const requestConfig: RequestConfig = {
+
   //基础调用地址
-  baseURL:'http://localhost:7529',
+  baseURL:'http://localhost:7528',
+  // baseURL:'http://api-backend.originai.icu',
   //带上cookie,登录过后不用重新登录
   withCredentials: true,
   // 错误处理： umi@3 的错误处理方案。

@@ -9,6 +9,7 @@ import {
 import {getUserInterfaceInfoByIdUsingPost} from "@/services/yiapi-backend/userInterfaceInfoController";
 import {useModel} from "@umijs/max";
 import {result} from "lodash";
+import {JSONSchema} from "@typescript-eslint/utils";
 
 /**
  * 主页
@@ -180,10 +181,10 @@ const Index: React.FC = () => {
       </Card>
       <Divider />
       <Card title="返回结果" loading={invokeLoading}>
-        {invokeRes}
+        <div style={{whiteSpace: 'pre-wrap'}}>{invokeRes}</div>
       </Card>
     </PageContainer>
-  );
+);
 };
 
 export default Index;

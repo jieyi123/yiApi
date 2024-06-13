@@ -27,7 +27,7 @@ public class NameController {
 
     @PostMapping(value = "/user")
     public String getNameByPostRestful(@RequestBody User user) {
-        System.out.println("POST Restful我的用户名为："+user.getName());
-        return "POST Restful我的用户名为："+user.getName();
+        System.out.println("用户名为："+user.getName());
+        return "用户名为："+user.getName();
     }
 }
